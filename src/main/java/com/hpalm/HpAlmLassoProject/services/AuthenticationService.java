@@ -28,13 +28,17 @@ public class AuthenticationService {
         String result = null;
         try {
             String reqXML = jsonXmlUtil.genearteXMLString(requestData);
-            result = endPointUtil.authenticateUser(reqXML);
+            result = endPointUtil.authenticateUser(updateReqXML(reqXML));
         } catch (JsonProcessingException e) {
             result = ErrorConstants.ERROR_JSON_CONVERSION + e.getMessage();
             log.error(ErrorConstants.ERROR_JSON_CONVERSION + methodName, e);
             e.printStackTrace();
         }
         return result;
+    }
+
+    private String updateReqXML(String reqXML) {
+        return "<alm-authentication>" + reqXML + "</alm-authentication>";
     }
 
 

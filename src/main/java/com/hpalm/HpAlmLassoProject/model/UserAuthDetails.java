@@ -13,9 +13,9 @@ public class UserAuthDetails {
 
     @JsonProperty
     @NotBlank
-    private String userId;
+    private String user;
 
     @JsonProperty
     @NotBlank
-    private String userPassword;
+    private String password;
 }
