@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: admin
+    hikari:
+      minimumIdle: 2
+      maximumPoolSize: 10
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+#URL Details
+hpalm:
+  action:
+    url: https://hpalm.apps2.capgemini.com
+  auth:
+    endpoint: /qcbin/authentication-point/alm-authenticate
+  rest:
+    domains: /qcbin/rest/domains
+  domain:
+    projects: /qcbin/rest/domains/FR_ADM/projects
+    defects: /qcbin/rest/domains/FR_ADM/projects/TMA_WOODI/defects
+    defect:
+      id: /qcbin/rest/domains/FR_ADM/projects/TMA_WOODI/defects/{$DEF_ID}
