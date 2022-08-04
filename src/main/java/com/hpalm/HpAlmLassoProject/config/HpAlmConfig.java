@@ -13,4 +13,7 @@ public class HpAlmConfig {
 
     @Value("${hpalm.auth.endpoint}")
     private String authEndPoint;
+
+    @Value("${hpalm.rest.domains}")
+    private String domainEndPoint;
 }
