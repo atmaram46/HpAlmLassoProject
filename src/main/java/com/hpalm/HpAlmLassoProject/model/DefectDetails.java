@@ -22,4 +22,7 @@ public class DefectDetails {
     @JsonProperty
     @NotBlank
     private String id;
+
+    @JsonProperty
+    private String xmlDefUpdates;
 }

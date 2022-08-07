@@ -177,6 +177,31 @@ public class EndPointUtil {
         return result.toString();
     }
 
+    public String updateDefectData(String domainName, String projectName, String id,
+                                   String updateXML, String lassCookie, String xrfToken) {
+        String methodName = "getProjectData";
+        BufferedReader reader = null;
+        StringBuilder result = new StringBuilder();
+        log.info("Inside Project Data API Call..." + methodName);
+        CloseableHttpResponse response = apiReqUtil.postRequestCall(updateXML,
+                createDefectUrl(domainName, projectName, id), generateDomainHeaders(lassCookie, xrfToken));
+        String responseStatus = String.valueOf(response.getStatusLine().getStatusCode());
+        try {
+            if(responseStatus.equals(RequestConstants.DOMAIN_RESP_SUCCESS)) {
+                reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                String readData;
+                while((readData = reader.readLine()) != null) {
+                    result.append(readData);
+                }
+            } else {
+                return response.getEntity().getContent().toString();
+            }
+        } catch (IOException e) {
+            log.error(methodName + ":" + ErrorConstants.ERROR_READING_AUTH_RESP, e);
+        }
+        return result.toString();
+    }
+
     private String createDefectUrl(String domainName, String project, String id) {
         String url = createDefectUrl(domainName, project);
         return url +"/"+ id;
@@ -205,4 +230,11 @@ public class EndPointUtil {
         return headerMap;
     }
 
+    private Map<String, String> generateDomainHeaders(String lessCookie, String xrfToken) {
+        Map<String, String> headerMap = new HashMap<>();
+        headerMap.put(RequestConstants.REQ_ACCEPT, RequestConstants.APPLICATION_XML);
+        headerMap.put(RequestConstants.COOKIE_HEADER, lessCookie);
+        headerMap.put(RequestConstants.REQ_XSRF_TOKEN, xrfToken);
+        return headerMap;
+    }
 }

@@ -28,7 +28,6 @@ public class APIReqUtil {
             CloseableHttpClient httpClient = HttpClients.createDefault();
             HttpPost postReq = new HttpPost(reqUrl);
             headerMap.forEach((key, value) -> postReq.addHeader(key, value));
-            postReq.addHeader(HttpHeaders.ACCEPT, RequestConstants.APPLICATION_XML);
             StringEntity reqBody = new StringEntity(requestXML);
             reqBody.setContentType(RequestConstants.APPLICATION_XML);
             postReq.setEntity(reqBody);

@@ -43,4 +43,12 @@ public class DomainService {
         return jsonXmlUtil.generateJson(endPointUtil.getProjectDefectData(domainName, projectName, id, lassCookie));
     }
 
+    public String updateDefDetails(String domainName, String projectName, String id,
+                                   String defXMLUpdate, String lassCookie, String xrfToken) {
+        String methodName = "updateDefDetails";
+        log.info(RequestConstants.INSIDE_METHOD + methodName);
+        return jsonXmlUtil.generateJson(endPointUtil.updateDefectData(
+                domainName, projectName, id, defXMLUpdate, lassCookie, xrfToken));
+    }
+
 }

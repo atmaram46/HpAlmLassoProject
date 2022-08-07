@@ -8,6 +8,7 @@ public final class ErrorConstants {
     public static final String ERROR_READING_AUTH_RESP = "Error in reading Auth Response...";
 
     public static final String DOMAIN_DET_MISSING = "Domain Details are missing...";
+    public static final String DEF_UPDATE_DET_MISSING = "Defect Update Details are missing...";
 
     public static final String ERROR_JSON_CONVERSION = "Error while creating XML from Request Object..";
 }

@@ -53,7 +53,7 @@ public class RequestListnerController {
     public ResponseEntity sessionMangCreateNew(
             @RequestHeader(value = RequestConstants.REQ_COOKIE, required = true) String lassCookie) {
         log.info("Inside Session Management...");
-        return  new ResponseEntity(authenticationService.updateSessionDet(lassCookie), HttpStatus.OK);
+        return  new ResponseEntity(authenticationService.createSessionDet(lassCookie), HttpStatus.OK);
     }
 
     @GetMapping("/getDomains")
@@ -100,5 +100,25 @@ public class RequestListnerController {
         }
         return  new ResponseEntity<>(
                 domainService.getProjectDefectViaId(defectDetails.getDomainName(), defectDetails.getProjectName(), defectDetails.getId(), lassCookie), HttpStatus.OK);
+    }
+
+    @PutMapping("/defects/id")
+    public ResponseEntity updateDefectDetails(
+            @RequestHeader(value = RequestConstants.REQ_COOKIE, required = true) String lassCookie,
+            @RequestHeader(value = RequestConstants.REQ_XSRF_TOKEN, required = true) String xsrfToken,
+            @Valid @RequestBody DefectDetails defectDetails, BindingResult result) {
+        log.info("Inside Defect Update Method...");
+        if(result.hasErrors()) {
+            log.error(ErrorConstants.DOMAIN_DET_MISSING);
+            return new ResponseEntity(ErrorConstants.DOMAIN_DET_MISSING, BAD_REQUEST);
+        }
+        if(defectDetails.getXmlDefUpdates().equals("")) {
+            log.error(ErrorConstants.DEF_UPDATE_DET_MISSING);
+            return new ResponseEntity(ErrorConstants.DEF_UPDATE_DET_MISSING, BAD_REQUEST);
+        }
+        return  new ResponseEntity<>(
+                domainService.updateDefDetails(defectDetails.getDomainName(), defectDetails.getProjectName(),
+                        defectDetails.getId(), defectDetails.getXmlDefUpdates(), lassCookie, xsrfToken), HttpStatus.OK);
+
     }
 }
