@@ -9,6 +9,7 @@ import com.hpalm.HpAlmLassoProject.exceptions.HpAlmExceptions;
 import com.hpalm.HpAlmLassoProject.model.UserAuthDetails;
 import com.hpalm.HpAlmLassoProject.util.EndPointUtil;
 import com.hpalm.HpAlmLassoProject.util.JsonXmlUtil;
+import com.hpalm.HpAlmLassoProject.util.SessionXMLReader;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class AuthenticationService {
 
     @Autowired
     private JsonXmlUtil jsonXmlUtil;
+
+    @Autowired
+    private SessionXMLReader sessionXMLReader;
 
     public Map<String, String> autheticationRequestProcessing(UserAuthDetails requestData) {
         String methodName = "autheticationRequestProcessing";
@@ -68,7 +72,7 @@ public class AuthenticationService {
         log.info(RequestConstants.INSIDE_METHOD + methodName);
         String result = null;
         try {
-            result = endPointUtil.siteSessionManage(lassCookie);
+            result = endPointUtil.siteSessionCreate(lassCookie, sessionXMLReader.readSessionXML());
         } catch (APIProcessingException e) {
             log.error(ErrorConstants.AUTH_REQ_DATA_ERROR + methodName, e);
             throw new HpAlmExceptions(e.getMessage(), ErrorCode.UNAUTHORIZED_ERROR);

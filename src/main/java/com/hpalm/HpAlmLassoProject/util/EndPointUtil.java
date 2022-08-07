@@ -36,7 +36,7 @@ public class EndPointUtil {
         String methodName = "authenticateUser";
         String result = null;
         log.info("Inside Session Management API Call..." + methodName);
-        CloseableHttpResponse response = apiReqUtil.postRequestCall("",
+        CloseableHttpResponse response = apiReqUtil.getRequestCall(
                 createFullUrl(hpAlmConfig.getSessionUrl()), generateDomainHeaders(cookie));
         String responseStatus = String.valueOf(response.getStatusLine().getStatusCode());
         if(responseStatus.equals(RequestConstants.DOMAIN_RESP_SUCCESS)) {
@@ -48,11 +48,11 @@ public class EndPointUtil {
         return result;
     }
 
-    public String siteSessionCreate(String cookie) throws APIProcessingException {
+    public String siteSessionCreate(String cookie, String reqBody) throws APIProcessingException {
         String methodName = "authenticateUser";
         String result = null;
         log.info("Inside Session Management API Call..." + methodName);
-        CloseableHttpResponse response = apiReqUtil.postRequestCall("",
+        CloseableHttpResponse response = apiReqUtil.postRequestCall(reqBody,
                 createFullUrl(hpAlmConfig.getSessionUrl()), generateDomainHeaders(cookie));
         String responseStatus = String.valueOf(response.getStatusLine().getStatusCode());
         if(responseStatus.equals(RequestConstants.DOMAIN_RESP_SUCCESS)) {

@@ -1,0 +1,18 @@
+<xs:element name="session-parameters" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:annotation>
+        <xs:documentation>
+            Attributes of a connection to the REST service.
+        </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+        <xs:all>
+            <xs:element name="client-type" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        REST Client
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+</xs:element>
