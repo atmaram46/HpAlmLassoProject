@@ -26,8 +26,5 @@ hpalm:
     endpoint: /qcbin/authentication-point/alm-authenticate
   rest:
     domains: /qcbin/rest/domains
-  domain:
-    projects: /qcbin/rest/domains/FR_ADM/projects
-    defects: /qcbin/rest/domains/FR_ADM/projects/TMA_WOODI/defects
-    defect:
-      id: /qcbin/rest/domains/FR_ADM/projects/TMA_WOODI/defects/{$DEF_ID}
+  session:
+    url: /qcbin/rest/site-session

@@ -19,28 +19,28 @@ public class DomainService {
     @Autowired
     private JsonXmlUtil jsonXmlUtil;
 
-    public String getDomainsPresent() {
+    public String getDomainsPresent(String lassCookie) {
         String methodName = "getDomainsPresent";
         log.info(RequestConstants.INSIDE_METHOD + methodName);
-        return jsonXmlUtil.generateJson(endPointUtil.getDomainsData());
+        return jsonXmlUtil.generateJson(endPointUtil.getDomainsData(lassCookie));
     }
 
-    public String getProjectPresent(String domainName) {
+    public String getProjectPresent(String domainName, String lassCookie) {
         String methodName = "getProjectPresent";
         log.info(RequestConstants.INSIDE_METHOD + methodName);
-        return jsonXmlUtil.generateJson(endPointUtil.getProjectData(domainName));
+        return jsonXmlUtil.generateJson(endPointUtil.getProjectData(domainName, lassCookie));
     }
 
-    public String getProjectDefectsList(String domainName, String projectName) {
+    public String getProjectDefectsList(String domainName, String projectName, String lassCookie) {
         String methodName = "getProjectPresent";
         log.info(RequestConstants.INSIDE_METHOD + methodName);
-        return jsonXmlUtil.generateJson(endPointUtil.getProjectDefectData(domainName, projectName));
+        return jsonXmlUtil.generateJson(endPointUtil.getProjectDefectData(domainName, projectName, lassCookie));
     }
 
-    public String getProjectDefectViaId(String domainName, String projectName, String id) {
+    public String getProjectDefectViaId(String domainName, String projectName, String id,  String lassCookie) {
         String methodName = "getProjectPresent";
         log.info(RequestConstants.INSIDE_METHOD + methodName);
-        return jsonXmlUtil.generateJson(endPointUtil.getProjectDefectData(domainName, projectName, id));
+        return jsonXmlUtil.generateJson(endPointUtil.getProjectDefectData(domainName, projectName, id, lassCookie));
     }
 
 }

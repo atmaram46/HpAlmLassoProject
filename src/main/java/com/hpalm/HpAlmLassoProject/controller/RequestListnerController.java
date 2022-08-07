@@ -1,6 +1,7 @@
 package com.hpalm.HpAlmLassoProject.controller;
 
 import com.hpalm.HpAlmLassoProject.constants.ErrorConstants;
+import com.hpalm.HpAlmLassoProject.constants.RequestConstants;
 import com.hpalm.HpAlmLassoProject.model.DefectDetails;
 import com.hpalm.HpAlmLassoProject.model.DomainDetails;
 import com.hpalm.HpAlmLassoProject.model.ProjectDetails;
@@ -41,42 +42,63 @@ public class RequestListnerController {
         return  new ResponseEntity<>(authenticationService.autheticationRequestProcessing(requestData), HttpStatus.OK);
     }
 
+    @GetMapping("/ExtendSession")
+    public ResponseEntity sessionMange(
+            @RequestHeader(value = RequestConstants.REQ_COOKIE, required = true) String lassCookie) {
+        log.info("Inside Session Management...");
+        return  new ResponseEntity(authenticationService.updateSessionDet(lassCookie), HttpStatus.OK);
+    }
+
+    @GetMapping("/createSession")
+    public ResponseEntity sessionMangCreateNew(
+            @RequestHeader(value = RequestConstants.REQ_COOKIE, required = true) String lassCookie) {
+        log.info("Inside Session Management...");
+        return  new ResponseEntity(authenticationService.updateSessionDet(lassCookie), HttpStatus.OK);
+    }
+
     @GetMapping("/getDomains")
-    public ResponseEntity getDomains() {
+    public ResponseEntity getDomains(
+            @RequestHeader(value = RequestConstants.REQ_COOKIE, required = true) String lassCookie) {
         log.info("Inside Get Domains...");
-        return  new ResponseEntity<>(domainService.getDomainsPresent(), HttpStatus.OK);
+        return  new ResponseEntity<>(domainService.getDomainsPresent(lassCookie), HttpStatus.OK);
     }
 
     @PostMapping("/projects")
-    public ResponseEntity getProjects(@Valid @RequestBody DomainDetails domainDetails, BindingResult result) {
+    public ResponseEntity getProjects(
+            @RequestHeader(value = RequestConstants.REQ_COOKIE, required = true) String lassCookie,
+            @Valid @RequestBody DomainDetails domainDetails, BindingResult result) {
         log.info("Inside Project List Method...");
         if(result.hasErrors()) {
             log.error(ErrorConstants.DOMAIN_DET_MISSING);
             return new ResponseEntity(ErrorConstants.DOMAIN_DET_MISSING, BAD_REQUEST);
         }
         return  new ResponseEntity<>(
-                domainService.getProjectPresent(domainDetails.getDomainName()), HttpStatus.OK);
+                domainService.getProjectPresent(domainDetails.getDomainName(), lassCookie), HttpStatus.OK);
     }
 
     @PostMapping("/defects")
-    public ResponseEntity getDefects(@Valid @RequestBody ProjectDetails projectDetails, BindingResult result) {
+    public ResponseEntity getDefects(
+            @RequestHeader(value = RequestConstants.REQ_COOKIE, required = true) String lassCookie,
+            @Valid @RequestBody ProjectDetails projectDetails, BindingResult result) {
         log.info("Inside Defect List Method...");
         if(result.hasErrors()) {
             log.error(ErrorConstants.DOMAIN_DET_MISSING);
             return new ResponseEntity(ErrorConstants.DOMAIN_DET_MISSING, BAD_REQUEST);
         }
         return  new ResponseEntity<>(
-                domainService.getProjectDefectsList(projectDetails.getDomainName(), projectDetails.getProjectName()), HttpStatus.OK);
+                domainService.getProjectDefectsList(projectDetails.getDomainName(), projectDetails.getProjectName(), lassCookie), HttpStatus.OK);
     }
 
     @PostMapping("/defects/id")
-    public ResponseEntity getDefectsWithId(@Valid @RequestBody DefectDetails defectDetails, BindingResult result) {
+    public ResponseEntity getDefectsWithId(
+            @RequestHeader(value = RequestConstants.REQ_COOKIE, required = true) String lassCookie,
+            @Valid @RequestBody DefectDetails defectDetails, BindingResult result) {
         log.info("Inside Defect List Method...");
         if(result.hasErrors()) {
             log.error(ErrorConstants.DOMAIN_DET_MISSING);
             return new ResponseEntity(ErrorConstants.DOMAIN_DET_MISSING, BAD_REQUEST);
         }
         return  new ResponseEntity<>(
-                domainService.getProjectDefectViaId(defectDetails.getDomainName(), defectDetails.getProjectName(), defectDetails.getId()), HttpStatus.OK);
+                domainService.getProjectDefectViaId(defectDetails.getDomainName(), defectDetails.getProjectName(), defectDetails.getId(), lassCookie), HttpStatus.OK);
     }
 }

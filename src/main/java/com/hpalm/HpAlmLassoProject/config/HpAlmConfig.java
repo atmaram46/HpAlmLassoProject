@@ -16,4 +16,7 @@ public class HpAlmConfig {
 
     @Value("${hpalm.rest.domains}")
     private String domainEndPoint;
+
+    @Value("${hpalm.session.url}")
+    private String sessionUrl;
 }

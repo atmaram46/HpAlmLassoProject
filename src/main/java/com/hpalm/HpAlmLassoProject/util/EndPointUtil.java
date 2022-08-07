@@ -3,13 +3,9 @@ package com.hpalm.HpAlmLassoProject.util;
 import com.hpalm.HpAlmLassoProject.config.HpAlmConfig;
 import com.hpalm.HpAlmLassoProject.constants.ErrorConstants;
 import com.hpalm.HpAlmLassoProject.constants.RequestConstants;
-import org.apache.http.HttpHeaders;
+import com.hpalm.HpAlmLassoProject.exceptions.APIProcessingException;
+import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,34 +32,62 @@ public class EndPointUtil {
         return hpAlmConfig.getMainUrl() + endpoint;
     }
 
-    public String authenticateUser(String requestXML) {
+    public String siteSessionManage(String cookie) throws APIProcessingException {
         String methodName = "authenticateUser";
-        BufferedReader reader = null;
-        String result = "";
-        log.info("Inside Authenticate User API Call..." + methodName);
-        CloseableHttpResponse response = apiReqUtil.postRequestCall(requestXML,
-                createFullUrl(hpAlmConfig.getAuthEndPoint()), generateDomainHeaders());
+        String result = null;
+        log.info("Inside Session Management API Call..." + methodName);
+        CloseableHttpResponse response = apiReqUtil.postRequestCall("",
+                createFullUrl(hpAlmConfig.getSessionUrl()), generateDomainHeaders(cookie));
         String responseStatus = String.valueOf(response.getStatusLine().getStatusCode());
-        try {
-            if(responseStatus.equals(RequestConstants.AUTH_LASS_KEY_PRESENT)) {
-                reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-                result = reader.readLine();
-            } else {
-                result = response.getEntity().getContent().toString();
-            }
-        } catch (IOException e) {
-            log.error(methodName + ":" + ErrorConstants.ERROR_READING_AUTH_RESP, e);
+        if(responseStatus.equals(RequestConstants.DOMAIN_RESP_SUCCESS)) {
+            result = "SUCCESS";
+        } else {
+            log.info(methodName + ":" + ErrorConstants.AUTH_REQ_DATA_ERROR);
+            throw new APIProcessingException(ErrorConstants.AUTH_REQ_DATA_ERROR);
         }
         return result;
     }
 
-    public String getDomainsData() {
+    public String siteSessionCreate(String cookie) throws APIProcessingException {
+        String methodName = "authenticateUser";
+        String result = null;
+        log.info("Inside Session Management API Call..." + methodName);
+        CloseableHttpResponse response = apiReqUtil.postRequestCall("",
+                createFullUrl(hpAlmConfig.getSessionUrl()), generateDomainHeaders(cookie));
+        String responseStatus = String.valueOf(response.getStatusLine().getStatusCode());
+        if(responseStatus.equals(RequestConstants.DOMAIN_RESP_SUCCESS)) {
+            result = "SUCCESS";
+        } else {
+            log.info(methodName + ":" + ErrorConstants.AUTH_REQ_DATA_ERROR);
+            throw new APIProcessingException(ErrorConstants.AUTH_REQ_DATA_ERROR);
+        }
+        return result;
+    }
+
+    public Map<String, String> authenticateUser(String requestXML) throws APIProcessingException {
+        String methodName = "authenticateUser";
+        Map<String, String> result = new HashMap<>();
+        log.info("Inside Authenticate User API Call..." + methodName);
+        CloseableHttpResponse response = apiReqUtil.postRequestCall(requestXML,
+                createFullUrl(hpAlmConfig.getAuthEndPoint()), generateDomainHeaders());
+        String responseStatus = String.valueOf(response.getStatusLine().getStatusCode());
+        if(responseStatus.equals(RequestConstants.DOMAIN_RESP_SUCCESS)) {
+            result.put(RequestConstants.REQ_COOKIE, response.getHeaders(RequestConstants.REQ_COOKIE)[0].getValue().split(";")[0]);
+            result.put(RequestConstants.REQ_COOKIE_EXP, response.getHeaders(RequestConstants.REQ_COOKIE_EXP)[0].getValue());
+        } else {
+            log.info(methodName + ":" + ErrorConstants.AUTH_REQ_DATA_ERROR);
+            throw new APIProcessingException(ErrorConstants.AUTH_REQ_DATA_ERROR);
+        }
+        return result;
+    }
+
+    public String getDomainsData(String lassCookie) {
         String methodName = "getDomainsData";
         BufferedReader reader = null;
         StringBuilder result = new StringBuilder();
         log.info("Inside Domain Data API Call..." + methodName);
         CloseableHttpResponse response = apiReqUtil.getRequestCall(
-                createFullUrl(hpAlmConfig.getDomainEndPoint()), generateDomainHeaders());
+                createFullUrl(hpAlmConfig.getDomainEndPoint()), generateDomainHeaders(lassCookie));
         String responseStatus = String.valueOf(response.getStatusLine().getStatusCode());
         try {
             if(responseStatus.equals(RequestConstants.DOMAIN_RESP_SUCCESS)) {
@@ -81,13 +105,13 @@ public class EndPointUtil {
         return result.toString();
     }
 
-    public String getProjectData(String domainName) {
+    public String getProjectData(String domainName, String lassCookie) {
         String methodName = "getProjectData";
         BufferedReader reader = null;
         StringBuilder result = new StringBuilder();
         log.info("Inside Project Data API Call..." + methodName);
         CloseableHttpResponse response = apiReqUtil.getRequestCall(
-                createProjectUrl(domainName), generateDomainHeaders());
+                createProjectUrl(domainName), generateDomainHeaders(lassCookie));
         String responseStatus = String.valueOf(response.getStatusLine().getStatusCode());
         try {
             if(responseStatus.equals(RequestConstants.DOMAIN_RESP_SUCCESS)) {
@@ -105,13 +129,13 @@ public class EndPointUtil {
         return result.toString();
     }
 
-    public String getProjectDefectData(String domainName, String projectName) {
+    public String getProjectDefectData(String domainName, String projectName, String lassCookie) {
         String methodName = "getProjectData";
         BufferedReader reader = null;
         StringBuilder result = new StringBuilder();
         log.info("Inside Project Data API Call..." + methodName);
         CloseableHttpResponse response = apiReqUtil.getRequestCall(
-                createDefectUrl(domainName, projectName), generateDomainHeaders());
+                createDefectUrl(domainName, projectName), generateDomainHeaders(lassCookie));
         String responseStatus = String.valueOf(response.getStatusLine().getStatusCode());
         try {
             if(responseStatus.equals(RequestConstants.DOMAIN_RESP_SUCCESS)) {
@@ -129,13 +153,13 @@ public class EndPointUtil {
         return result.toString();
     }
 
-    public String getProjectDefectData(String domainName, String projectName, String id) {
+    public String getProjectDefectData(String domainName, String projectName, String id, String lassCookie) {
         String methodName = "getProjectData";
         BufferedReader reader = null;
         StringBuilder result = new StringBuilder();
         log.info("Inside Project Data API Call..." + methodName);
         CloseableHttpResponse response = apiReqUtil.getRequestCall(
-                createDefectUrl(domainName, projectName, id), generateDomainHeaders());
+                createDefectUrl(domainName, projectName, id), generateDomainHeaders(lassCookie));
         String responseStatus = String.valueOf(response.getStatusLine().getStatusCode());
         try {
             if(responseStatus.equals(RequestConstants.DOMAIN_RESP_SUCCESS)) {
@@ -171,6 +195,13 @@ public class EndPointUtil {
     private Map<String, String> generateDomainHeaders() {
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put(RequestConstants.REQ_ACCEPT, RequestConstants.APPLICATION_XML);
+        return headerMap;
+    }
+
+    private Map<String, String> generateDomainHeaders(String lessCookie) {
+        Map<String, String> headerMap = new HashMap<>();
+        headerMap.put(RequestConstants.REQ_ACCEPT, RequestConstants.APPLICATION_XML);
+        headerMap.put(RequestConstants.COOKIE_HEADER, lessCookie);
         return headerMap;
     }
 
