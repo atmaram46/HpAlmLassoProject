@@ -3,14 +3,18 @@ package com.hpalm.HpAlmLassoProject.util;
 import com.hpalm.HpAlmLassoProject.constants.ErrorConstants;
 import com.hpalm.HpAlmLassoProject.constants.RequestConstants;
 import org.apache.http.HttpHeaders;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -20,12 +24,15 @@ public class APIReqUtil {
 
     private static final Logger log = LogManager.getLogger(APIReqUtil.class);
 
+    @Autowired
+    private HttpClientUtil httpClientUtil;
+
     public CloseableHttpResponse postRequestCall(String requestXML, String reqUrl, Map<String, String> headerMap) {
         String methodName = "postRequestCall";
         log.info("Inside Post API Call..." + methodName);
         CloseableHttpResponse response = null;
         try {
-            CloseableHttpClient httpClient = HttpClients.createDefault();
+            CloseableHttpClient httpClient = httpClientUtil.generateHttpCLient(headerMap);
             HttpPost postReq = new HttpPost(reqUrl);
             headerMap.forEach((key, value) -> postReq.addHeader(key, value));
             StringEntity reqBody = new StringEntity(requestXML);
