@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Base64;
 import java.util.Map;
 
 @Service
@@ -35,12 +36,29 @@ public class APIReqUtil {
             CloseableHttpClient httpClient = httpClientUtil.generateHttpCLient(headerMap);
             HttpPost postReq = new HttpPost(reqUrl);
             headerMap.forEach((key, value) -> postReq.addHeader(key, value));
-            StringEntity reqBody = new StringEntity(requestXML);
-            reqBody.setContentType(RequestConstants.APPLICATION_XML);
-            postReq.setEntity(reqBody);
+//            StringEntity reqBody = new StringEntity(requestXML);
+//            reqBody.setContentType(RequestConstants.APPLICATION_XML);
+//            postReq.setEntity(reqBody);
             response = httpClient.execute(postReq);
         } catch (Exception e) {
             log.error(methodName + ":" + ErrorConstants.ERROR_CALLING_POST_API, e);
+        }
+        return response;
+    }
+
+    public CloseableHttpResponse getRequestAuthCall(String userName, String password, String reqUrl, Map<String, String> headerMap) {
+        String methodName = "getRequestCall";
+        log.info("Inside Get API Call..." + methodName);
+        CloseableHttpResponse response = null;
+        try {
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            String encoding = Base64.getEncoder().encodeToString((userName + ":" + password).getBytes());
+            HttpGet getReq = new HttpGet(reqUrl);
+            headerMap.forEach((key, value) -> getReq.addHeader(key, value));
+            getReq.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoding);
+            response = httpClient.execute(getReq);
+        } catch (Exception e) {
+            log.error(methodName + ":" + ErrorConstants.ERROR_CALLING_GET_API, e);
         }
         return response;
     }

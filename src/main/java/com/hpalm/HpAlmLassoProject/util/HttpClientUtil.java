@@ -48,10 +48,16 @@ public class HttpClientUtil {
                             headerMap.get(RequestConstants.REQ_XSRF_TOKEN))).build();
             headerMap.remove(RequestConstants.COOKIE_HEADER);
             headerMap.remove(RequestConstants.REQ_XSRF_TOKEN);
+        } else if(headerMap.containsKey(RequestConstants.COOKIE_HEADER)
+                && headerMap.containsKey(RequestConstants.REQ_QC_SESSION)) {
+            httpClient = HttpClients.custom().setDefaultCookieStore(
+                    generateCookieStore(headerMap.get(RequestConstants.COOKIE_HEADER),
+                            headerMap.get(RequestConstants.REQ_XSRF_TOKEN))).build();
+            headerMap.remove(RequestConstants.COOKIE_HEADER);
+            headerMap.remove(RequestConstants.REQ_QC_SESSION);
         } else if(headerMap.containsKey(RequestConstants.COOKIE_HEADER)) {
             httpClient = HttpClients.custom().setDefaultCookieStore(
                     generateCookieStore(headerMap.get(RequestConstants.COOKIE_HEADER))).build();
-            headerMap.remove(RequestConstants.COOKIE_HEADER);
         } else {
             httpClient = HttpClients.createDefault();
         }

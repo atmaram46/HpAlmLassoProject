@@ -37,11 +37,7 @@ public class AuthenticationService {
         log.info(RequestConstants.INSIDE_METHOD + methodName);
         Map<String, String> result = new HashMap<>();
         try {
-            String reqXML = jsonXmlUtil.genearteXMLString(requestData);
-            result = endPointUtil.authenticateUser(updateReqXML(reqXML));
-        } catch (JsonProcessingException e) {
-            log.error(ErrorConstants.ERROR_JSON_CONVERSION + methodName, e);
-            throw new HpAlmExceptions(e.getMessage(), ErrorCode.PARSING_ERROR);
+            result = endPointUtil.authenticateUser(requestData.getUser(), requestData.getPassword());
         } catch (APIProcessingException e) {
             log.error(ErrorConstants.AUTH_REQ_DATA_ERROR + methodName, e);
             throw new HpAlmExceptions(e.getMessage(), ErrorCode.UNAUTHORIZED_ERROR);
@@ -49,17 +45,12 @@ public class AuthenticationService {
         return result;
     }
 
-    private String updateReqXML(String reqXML) {
-        return "<alm-authentication>" + reqXML + "</alm-authentication>";
-    }
-
-
-    public String updateSessionDet(String lassCookie) {
+    public Map<String, String> updateSessionDet(String lassCookie, String qcSess) {
         String methodName = "autheticationRequestProcessing";
         log.info(RequestConstants.INSIDE_METHOD + methodName);
-        String result = null;
+        Map<String, String> result = null;
         try {
-            result = endPointUtil.siteSessionManage(lassCookie);
+            result = endPointUtil.siteSessionManage(lassCookie, qcSess);
         } catch (APIProcessingException e) {
             log.error(ErrorConstants.AUTH_REQ_DATA_ERROR + methodName, e);
             throw new HpAlmExceptions(e.getMessage(), ErrorCode.UNAUTHORIZED_ERROR);
@@ -67,12 +58,12 @@ public class AuthenticationService {
         return result;
     }
 
-    public String createSessionDet(String lassCookie) {
+    public Map<String, String> createSessionDet(String lassCookie) {
         String methodName = "autheticationRequestProcessing";
         log.info(RequestConstants.INSIDE_METHOD + methodName);
-        String result = null;
+        Map<String, String> result = null;
         try {
-            result = endPointUtil.siteSessionCreate(lassCookie, sessionXMLReader.readSessionXML());
+            result = endPointUtil.siteSessionCreate(lassCookie, "/");
         } catch (APIProcessingException e) {
             log.error(ErrorConstants.AUTH_REQ_DATA_ERROR + methodName, e);
             throw new HpAlmExceptions(e.getMessage(), ErrorCode.UNAUTHORIZED_ERROR);

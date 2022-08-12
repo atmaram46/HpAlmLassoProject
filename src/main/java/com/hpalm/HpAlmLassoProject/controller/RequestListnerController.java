@@ -42,11 +42,12 @@ public class RequestListnerController {
         return  new ResponseEntity<>(authenticationService.autheticationRequestProcessing(requestData), HttpStatus.OK);
     }
 
-    @GetMapping("/ExtendSession")
+    @GetMapping("/extendSession")
     public ResponseEntity sessionMange(
-            @RequestHeader(value = RequestConstants.REQ_COOKIE, required = true) String lassCookie) {
+            @RequestHeader(value = RequestConstants.REQ_COOKIE, required = true) String lassCookie,
+            @RequestHeader(value = RequestConstants.REQ_QC_SESSION, required = true) String qcSess) {
         log.info("Inside Session Management...");
-        return  new ResponseEntity(authenticationService.updateSessionDet(lassCookie), HttpStatus.OK);
+        return  new ResponseEntity(authenticationService.updateSessionDet(lassCookie, qcSess), HttpStatus.OK);
     }
 
     @GetMapping("/createSession")

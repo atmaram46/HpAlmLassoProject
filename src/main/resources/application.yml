@@ -23,7 +23,7 @@ hpalm:
   action:
     url: https://hpalm.apps2.capgemini.com
   auth:
-    endpoint: /qcbin/authentication-point/alm-authenticate
+    endpoint: /qcbin/authentication-point/authenticate
   rest:
     domains: /qcbin/rest/domains
   session:

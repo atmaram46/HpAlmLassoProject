@@ -15,7 +15,7 @@ public class RequestConstants {
     public static final String REQ_XSRF_TOKEN = "XSRF-TOKEN";
     public static final String REQ_QC_SESSION = "QCSession";
     public static final String REQ_COOKIE_EXP = "Expires";
-    public static final String REQ_COOKIE_QCSession = "QCSession";
+    public static final String REQ_COOKIE_ALMUSER = "ALM_USER";
     public static final String REQ_COOKIE_LWSSO_CKEY = "LWSSO_COOKIE_KEY";
 
     public static final String COOKIE_HEADER = "Cookie";

@@ -32,15 +32,18 @@ public class EndPointUtil {
         return hpAlmConfig.getMainUrl() + endpoint;
     }
 
-    public String siteSessionManage(String cookie) throws APIProcessingException {
+    public Map<String, String> siteSessionManage(String cookie, String qcSess) throws APIProcessingException {
         String methodName = "authenticateUser";
-        String result = null;
+        Map<String, String> result = new HashMap<>();
         log.info("Inside Session Management API Call..." + methodName);
         CloseableHttpResponse response = apiReqUtil.getRequestCall(
-                createFullUrl(hpAlmConfig.getSessionUrl()), generateDomainHeaders(cookie));
+                createFullUrl(hpAlmConfig.getSessionUrl()), generateDomainHeaders(cookie, qcSess));
         String responseStatus = String.valueOf(response.getStatusLine().getStatusCode());
-        if(responseStatus.equals(RequestConstants.DOMAIN_RESP_SUCCESS)) {
-            result = "SUCCESS";
+        if(responseStatus.equals(RequestConstants.AUTH_LASS_KEY_PRESENT)) {
+            result.put(RequestConstants.REQ_COOKIE, response.getHeaders(RequestConstants.REQ_COOKIE)[0].getValue().split(";")[0]);
+            result.put(RequestConstants.REQ_QC_SESSION, response.getHeaders(RequestConstants.REQ_COOKIE)[1].getValue().split(";")[0]);
+            result.put(RequestConstants.REQ_COOKIE_ALMUSER, response.getHeaders(RequestConstants.REQ_COOKIE)[2].getValue().split(";")[0]);
+            result.put(RequestConstants.REQ_XSRF_TOKEN, response.getHeaders(RequestConstants.REQ_COOKIE)[3].getValue().split(";")[0]);
         } else {
             log.info(methodName + ":" + ErrorConstants.AUTH_REQ_DATA_ERROR);
             throw new APIProcessingException(ErrorConstants.AUTH_REQ_DATA_ERROR);
@@ -48,15 +51,18 @@ public class EndPointUtil {
         return result;
     }
 
-    public String siteSessionCreate(String cookie, String reqBody) throws APIProcessingException {
+    public Map<String, String> siteSessionCreate(String cookie, String reqBody) throws APIProcessingException {
         String methodName = "authenticateUser";
-        String result = null;
+        Map<String, String> result = new HashMap<>();
         log.info("Inside Session Management API Call..." + methodName);
         CloseableHttpResponse response = apiReqUtil.postRequestCall(reqBody,
                 createFullUrl(hpAlmConfig.getSessionUrl()), generateDomainHeaders(cookie));
         String responseStatus = String.valueOf(response.getStatusLine().getStatusCode());
-        if(responseStatus.equals(RequestConstants.DOMAIN_RESP_SUCCESS)) {
-            result = "SUCCESS";
+        if(responseStatus.equals(RequestConstants.AUTH_LASS_KEY_PRESENT)) {
+            result.put(RequestConstants.REQ_COOKIE, response.getHeaders(RequestConstants.REQ_COOKIE)[0].getValue().split(";")[0]);
+            result.put(RequestConstants.REQ_QC_SESSION, response.getHeaders(RequestConstants.REQ_COOKIE)[1].getValue().split(";")[0]);
+            result.put(RequestConstants.REQ_COOKIE_ALMUSER, response.getHeaders(RequestConstants.REQ_COOKIE)[2].getValue().split(";")[0]);
+            result.put(RequestConstants.REQ_XSRF_TOKEN, response.getHeaders(RequestConstants.REQ_COOKIE)[3].getValue().split(";")[0]);
         } else {
             log.info(methodName + ":" + ErrorConstants.AUTH_REQ_DATA_ERROR);
             throw new APIProcessingException(ErrorConstants.AUTH_REQ_DATA_ERROR);
@@ -64,11 +70,11 @@ public class EndPointUtil {
         return result;
     }
 
-    public Map<String, String> authenticateUser(String requestXML) throws APIProcessingException {
+    public Map<String, String> authenticateUser(String userName, String password) throws APIProcessingException {
         String methodName = "authenticateUser";
         Map<String, String> result = new HashMap<>();
         log.info("Inside Authenticate User API Call..." + methodName);
-        CloseableHttpResponse response = apiReqUtil.postRequestCall(requestXML,
+        CloseableHttpResponse response = apiReqUtil.getRequestAuthCall(userName, password,
                 createFullUrl(hpAlmConfig.getAuthEndPoint()), generateDomainHeaders());
         String responseStatus = String.valueOf(response.getStatusLine().getStatusCode());
         if(responseStatus.equals(RequestConstants.DOMAIN_RESP_SUCCESS)) {
@@ -227,6 +233,14 @@ public class EndPointUtil {
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put(RequestConstants.REQ_ACCEPT, RequestConstants.APPLICATION_XML);
         headerMap.put(RequestConstants.COOKIE_HEADER, lessCookie);
+        return headerMap;
+    }
+
+    private Map<String, String> generateSessHeaders(String lessCookie, String qcSession) {
+        Map<String, String> headerMap = new HashMap<>();
+        headerMap.put(RequestConstants.REQ_ACCEPT, RequestConstants.APPLICATION_XML);
+        headerMap.put(RequestConstants.COOKIE_HEADER, lessCookie);
+        headerMap.put(RequestConstants.REQ_QC_SESSION, qcSession);
         return headerMap;
     }
 
