@@ -59,9 +59,12 @@ public class RequestListnerController {
 
     @GetMapping("/getDomains")
     public ResponseEntity getDomains(
-            @RequestHeader(value = RequestConstants.REQ_COOKIE, required = true) String lassCookie) {
+            @RequestHeader(value = RequestConstants.REQ_COOKIE, required = true) String lassCookie,
+            @RequestHeader(value = RequestConstants.REQ_QC_SESSION, required = true) String qcSess,
+            @RequestHeader(value = RequestConstants.REQ_XSRF_TOKEN, required = true) String xrfToken,
+            @RequestHeader(value = RequestConstants.REQ_COOKIE_ALMUSER, required = true) String almUser) {
         log.info("Inside Get Domains...");
-        return  new ResponseEntity<>(domainService.getDomainsPresent(lassCookie), HttpStatus.OK);
+        return  new ResponseEntity<>(domainService.getDomainsPresent(lassCookie, qcSess, xrfToken, almUser), HttpStatus.OK);
     }
 
     @PostMapping("/projects")

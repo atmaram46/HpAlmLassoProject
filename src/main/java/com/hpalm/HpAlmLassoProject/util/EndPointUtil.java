@@ -37,7 +37,7 @@ public class EndPointUtil {
         Map<String, String> result = new HashMap<>();
         log.info("Inside Session Management API Call..." + methodName);
         CloseableHttpResponse response = apiReqUtil.getRequestCall(
-                createFullUrl(hpAlmConfig.getSessionUrl()), generateDomainHeaders(cookie, qcSess));
+                createFullUrl(hpAlmConfig.getSessionUrl()), generateSessHeaders(cookie, qcSess));
         String responseStatus = String.valueOf(response.getStatusLine().getStatusCode());
         if(responseStatus.equals(RequestConstants.AUTH_LASS_KEY_PRESENT)) {
             result.put(RequestConstants.REQ_COOKIE, response.getHeaders(RequestConstants.REQ_COOKIE)[0].getValue().split(";")[0]);
@@ -60,9 +60,9 @@ public class EndPointUtil {
         String responseStatus = String.valueOf(response.getStatusLine().getStatusCode());
         if(responseStatus.equals(RequestConstants.AUTH_LASS_KEY_PRESENT)) {
             result.put(RequestConstants.REQ_COOKIE, response.getHeaders(RequestConstants.REQ_COOKIE)[0].getValue().split(";")[0]);
-            result.put(RequestConstants.REQ_QC_SESSION, response.getHeaders(RequestConstants.REQ_COOKIE)[1].getValue().split(";")[0]);
-            result.put(RequestConstants.REQ_COOKIE_ALMUSER, response.getHeaders(RequestConstants.REQ_COOKIE)[2].getValue().split(";")[0]);
-            result.put(RequestConstants.REQ_XSRF_TOKEN, response.getHeaders(RequestConstants.REQ_COOKIE)[3].getValue().split(";")[0]);
+            result.put(RequestConstants.REQ_QC_SESSION, response.getHeaders(RequestConstants.REQ_COOKIE)[1].getValue().split(";")[0].split("=")[1]);
+            result.put(RequestConstants.REQ_COOKIE_ALMUSER, response.getHeaders(RequestConstants.REQ_COOKIE)[2].getValue().split(";")[0].split("=")[1]);
+            result.put(RequestConstants.REQ_XSRF_TOKEN, response.getHeaders(RequestConstants.REQ_COOKIE)[3].getValue().split(";")[0].split("=")[1]);
         } else {
             log.info(methodName + ":" + ErrorConstants.AUTH_REQ_DATA_ERROR);
             throw new APIProcessingException(ErrorConstants.AUTH_REQ_DATA_ERROR);
@@ -87,13 +87,13 @@ public class EndPointUtil {
         return result;
     }
 
-    public String getDomainsData(String lassCookie) {
+    public String getDomainsData(String lassCookie, String qcSess, String xrfToken, String almUser) {
         String methodName = "getDomainsData";
         BufferedReader reader = null;
         StringBuilder result = new StringBuilder();
         log.info("Inside Domain Data API Call..." + methodName);
         CloseableHttpResponse response = apiReqUtil.getRequestCall(
-                createFullUrl(hpAlmConfig.getDomainEndPoint()), generateDomainHeaders(lassCookie));
+                createFullUrl(hpAlmConfig.getDomainEndPoint()), generateDomainHeaders(lassCookie, qcSess, xrfToken, almUser));
         String responseStatus = String.valueOf(response.getStatusLine().getStatusCode());
         try {
             if(responseStatus.equals(RequestConstants.DOMAIN_RESP_SUCCESS)) {
@@ -248,6 +248,16 @@ public class EndPointUtil {
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put(RequestConstants.REQ_ACCEPT, RequestConstants.APPLICATION_XML);
         headerMap.put(RequestConstants.COOKIE_HEADER, lessCookie);
+        headerMap.put(RequestConstants.REQ_XSRF_TOKEN, xrfToken);
+        return headerMap;
+    }
+
+    private Map<String, String> generateDomainHeaders(String lessCookie, String qcSession, String xrfToken, String almUser) {
+        Map<String, String> headerMap = new HashMap<>();
+        headerMap.put(RequestConstants.REQ_ACCEPT, RequestConstants.APPLICATION_XML);
+        headerMap.put(RequestConstants.COOKIE_HEADER, lessCookie);
+        headerMap.put(RequestConstants.REQ_QC_SESSION, qcSession);
+        headerMap.put(RequestConstants.REQ_COOKIE_ALMUSER, almUser);
         headerMap.put(RequestConstants.REQ_XSRF_TOKEN, xrfToken);
         return headerMap;
     }

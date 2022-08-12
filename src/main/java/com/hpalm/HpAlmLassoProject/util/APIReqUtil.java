@@ -68,7 +68,7 @@ public class APIReqUtil {
         log.info("Inside Get API Call..." + methodName);
         CloseableHttpResponse response = null;
         try {
-            CloseableHttpClient httpClient = HttpClients.createDefault();
+            CloseableHttpClient httpClient = httpClientUtil.generateHttpCLient(headerMap);
             HttpGet getReq = new HttpGet(reqUrl);
             headerMap.forEach((key, value) -> getReq.addHeader(key, value));
             response = httpClient.execute(getReq);

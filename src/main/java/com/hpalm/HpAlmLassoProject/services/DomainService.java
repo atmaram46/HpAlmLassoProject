@@ -19,10 +19,10 @@ public class DomainService {
     @Autowired
     private JsonXmlUtil jsonXmlUtil;
 
-    public String getDomainsPresent(String lassCookie) {
+    public String getDomainsPresent(String lassCookie, String qcSess, String xrfToken, String almUser) {
         String methodName = "getDomainsPresent";
         log.info(RequestConstants.INSIDE_METHOD + methodName);
-        return jsonXmlUtil.generateJson(endPointUtil.getDomainsData(lassCookie));
+        return jsonXmlUtil.generateJson(endPointUtil.getDomainsData(lassCookie, qcSess, xrfToken, almUser));
     }
 
     public String getProjectPresent(String domainName, String lassCookie) {
